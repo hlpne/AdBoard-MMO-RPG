@@ -1,0 +1,19 @@
+{{ site_name }}
+Новый отклик
+
+Здравствуйте, {{ advert.author.email }}!
+
+У вас новый отклик на объявление!
+
+Объявление: {{ advert.title }}
+Категория: {{ advert.category.name }}
+От: {{ reply.author.email }}
+
+Текст отклика:
+{{ reply.text }}
+
+Управление откликами: http://localhost:8000/replies/my/
+
+---
+© 2025 {{ site_name }}. Все права защищены.
+

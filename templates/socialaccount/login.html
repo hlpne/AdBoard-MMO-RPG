@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+
+{% block title %}Вход через {{ provider.name }} - MMO Board{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> Вход через {{ provider.name }}</h3>
+            </div>
+            <div class="card-body">
+                {% if process == "connect" %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Вы собираетесь подключить аккаунт {{ provider.name }} к вашему профилю.
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Вы собираетесь войти через {{ provider.name }}.
+                    </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle"></i> Продолжить
+                    </button>
+                </form>
+                
+                <hr>
+                
+                <div class="text-center">
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Назад к входу
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

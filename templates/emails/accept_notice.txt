@@ -1,0 +1,16 @@
+{{ site_name }}
+Отклик принят!
+
+Здравствуйте, {{ reply.author.email }}!
+
+Ваш отклик принят автором объявления!
+
+Объявление: {{ advert.title }}
+Категория: {{ advert.category.name }}
+Автор: {{ advert.author.email }}
+
+Посмотреть объявление: http://localhost:8000/adverts/{{ advert.pk }}/
+
+---
+© 2025 {{ site_name }}. Все права защищены.
+

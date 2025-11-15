@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Отправить рассылку - MMO Board{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="bi bi-send"></i> Отправить рассылку</h3>
+            </div>
+            <div class="card-body">
+                <h5>{{ template.title }}</h5>
+                <p class="text-muted">Создан: {{ template.created_at|date:"d.m.Y H:i" }}</p>
+                
+                <div class="border p-3 mb-4">
+                    {{ template.html_body|safe }}
+                </div>
+                
+                <form method="post" onsubmit="return confirm('Вы уверены, что хотите запустить рассылку?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send"></i> Запустить рассылку
+                    </button>
+                    <a href="{% url 'newsletters:template_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Отмена
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,2 @@
+default_app_config = 'replies.apps.RepliesConfig'
+

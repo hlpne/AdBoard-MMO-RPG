@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Подтверждение email - MMO Board{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="bi bi-envelope-check"></i> Подтверждение email</h3>
+            </div>
+            <div class="card-body">
+                {% if confirmation %}
+                    {% if confirmation.email_address.verified %}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> Этот email адрес уже подтвержден.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Пожалуйста, подтвердите, что <strong>{{ confirmation.email_address.email }}</strong> является вашим email адресом.
+                        </div>
+                        
+                        <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-check-circle"></i> Подтвердить
+                            </button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Неверная или устаревшая ссылка подтверждения.
+                    </div>
+                    
+                    <p class="text-muted">
+                        Возможно, ссылка уже была использована или истек срок её действия. 
+                        Пожалуйста, запросите новую ссылку подтверждения.
+                    </p>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'account_email' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-envelope"></i> Управление email адресами
+                    </a>
+                    <a href="{% url 'adverts:list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-house"></i> На главную
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

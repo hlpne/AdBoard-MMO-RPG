@@ -1,0 +1,30 @@
+# Django Framework
+Django>=5.2.0,<6.0
+
+# Authentication & OAuth
+django-allauth>=0.57.0
+requests>=2.31.0
+PyJWT>=2.8.0
+cryptography>=41.0.0
+
+# Background Tasks
+APScheduler>=3.10.4
+django-apscheduler>=0.7.0
+
+# Content Processing
+bleach>=6.1.0
+markdown-it-py>=3.0.0
+beautifulsoup4>=4.12.0
+
+# Image & Video Processing
+Pillow>=10.3.0
+opencv-python-headless>=4.8.0
+
+# Database
+psycopg2-binary>=2.9.9
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# Опционально для production:
+# gunicorn>=21.2.0

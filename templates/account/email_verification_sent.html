@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Письмо отправлено - MMO Board{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="bi bi-envelope-check"></i> Письмо отправлено</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-envelope-paper-heart" style="font-size: 4rem; color: #0d6efd;"></i>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Мы отправили вам письмо для подтверждения email адреса.
+                </div>
+                
+                <p class="mb-3">
+                    Пожалуйста, проверьте вашу почту и перейдите по ссылке в письме для завершения регистрации.
+                </p>
+                
+                <div class="alert alert-light border">
+                    <small class="text-muted">
+                        <i class="bi bi-clock"></i> Если письмо не пришло в течение нескольких минут, проверьте папку "Спам" или попробуйте зарегистрироваться снова.
+                    </small>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'adverts:list' %}" class="btn btn-primary">
+                        <i class="bi bi-house"></i> На главную
+                    </a>
+                    <a href="{% url 'account_login' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-box-arrow-in-right"></i> К странице входа
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

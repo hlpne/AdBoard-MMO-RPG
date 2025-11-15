@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Объявления - MMO Board{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-clipboard-data"></i> Объявления</h1>
+    </div>
+    {% if user.is_authenticated %}
+        <div class="col-md-4 text-end">
+            <a href="{% url 'adverts:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Создать объявление
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Filters and Search -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" action="{% url 'adverts:list' %}" class="row g-3">
+            <div class="col-md-4">
+                <label for="category" class="form-label">Категория</label>
+                <select name="category" id="category" class="form-select">
+                    <option value="">Все категории</option>
+                    {% for category in categories %}
+                        <option value="{{ category.slug }}" {% if current_category == category.slug %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="q" class="form-label">Поиск</label>
+                <input type="text" name="q" id="q" class="form-control" value="{{ search_query }}" placeholder="Поиск по заголовку и тексту...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Найти
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Adverts List -->
+{% if page_obj %}
+    {% for advert in page_obj %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0">
+                        <a href="{% url 'adverts:detail' advert.pk %}" class="text-decoration-none">
+                            {{ advert.title }}
+                        </a>
+                    </h5>
+                    <span class="badge bg-secondary category-badge">{{ advert.category.name }}</span>
+                </div>
+                <p class="text-muted small mb-2">
+                    <i class="bi bi-person"></i> {{ advert.author.email|default:"—" }} | 
+                    <i class="bi bi-clock"></i> {{ advert.created_at|date:"d.m.Y H:i"|default:"—" }}
+                </p>
+                <div class="markdown-content">
+                    {% if advert.body_html %}
+                        {{ advert.body_html|safe|truncatewords:50 }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+                <a href="{% url 'adverts:detail' advert.pk %}" class="btn btn-sm btn-outline-primary mt-2">
+                    Читать далее <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Первая</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Предыдущая</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Следующая</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Последняя</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> Объявлений не найдено.
+    </div>
+{% endif %}
+{% endblock %}
+

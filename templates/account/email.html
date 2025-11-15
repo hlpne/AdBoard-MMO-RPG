@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Управление email - MMO Board{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="bi bi-envelope"></i> Управление email адресами</h3>
+            </div>
+            <div class="card-body">
+                {% if user.emailaddress_set.all %}
+                    <p class="mb-3"><i class="bi bi-info-circle"></i> Следующие email адреса связаны с вашим аккаунтом:</p>
+                    
+                    <form method="post" action="{% url 'account_email' %}">
+                        {% csrf_token %}
+                        
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>Статус</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for emailaddress in user.emailaddress_set.all %}
+                                        <tr>
+                                            <td>
+                                                <input id="email_radio_{{ forloop.counter }}" type="radio" name="email" {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked"{% endif %} value="{{ emailaddress.email }}">
+                                                <label for="email_radio_{{ forloop.counter }}">{{ emailaddress.email }}</label>
+                                            </td>
+                                            <td>
+                                                {% if emailaddress.verified %}
+                                                    <span class="badge bg-success">
+                                                        <i class="bi bi-check-circle"></i> Подтвержден
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">
+                                                        <i class="bi bi-exclamation-circle"></i> Не подтвержден
+                                                    </span>
+                                                {% endif %}
+                                                {% if emailaddress.primary %}
+                                                    <span class="badge bg-primary">
+                                                        <i class="bi bi-star"></i> Основной
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if not emailaddress.verified %}
+                                                    <button type="submit" name="action_send" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-envelope"></i> Отправить подтверждение
+                                                    </button>
+                                                {% endif %}
+                                                {% if emailaddress.primary %}
+                                                    <button type="submit" name="action_primary" class="btn btn-sm btn-outline-secondary" disabled>
+                                                        <i class="bi bi-star"></i> Основной
+                                                    </button>
+                                                {% else %}
+                                                    <button type="submit" name="action_primary" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-star"></i> Сделать основным
+                                                    </button>
+                                                {% endif %}
+                                                <button type="submit" name="action_remove" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i> Удалить
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> У вас нет привязанных email адресов.
+                    </div>
+                {% endif %}
+                
+                <hr>
+                
+                <h5 class="mb-3"><i class="bi bi-plus-circle"></i> Добавить email адрес</h5>
+                <form method="post" action="{% url 'account_email' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger small">{{ form.email.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">После добавления вам будет отправлено письмо для подтверждения</small>
+                    </div>
+                    <button type="submit" name="action_add" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Добавить email
+                    </button>
+                </form>
+                
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'adverts:list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Назад к объявлениям
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,174 @@
+{% extends 'adverts/create.html' %}
+
+{% block title %}Редактировать объявление - MMO Board{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2><i class="bi bi-pencil"></i> Редактировать объявление</h2>
+        
+        <div class="card mb-3">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if not show_preview %}active{% endif %}" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit" type="button" role="tab">
+                            <i class="bi bi-pencil"></i> Редактор
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if show_preview %}active{% endif %}" id="preview-tab" data-bs-toggle="tab" data-bs-target="#preview" type="button" role="tab">
+                            <i class="bi bi-eye"></i> Предпросмотр
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="advert-form">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.category.id_for_label }}" class="form-label">Категория *</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                            <div class="text-danger small">{{ form.category.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">Заголовок *</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="text-danger small">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade {% if not show_preview %}show active{% endif %}" id="edit" role="tabpanel">
+                            <div class="mb-3">
+                                <label for="{{ form.body_md.id_for_label }}" class="form-label">
+                                    Текст объявления *
+                                    <small class="text-muted">(поддерживается Markdown)</small>
+                                </label>
+                                {{ form.body_md }}
+                                {% if form.body_md.errors %}
+                                    <div class="text-danger small mt-2">{{ form.body_md.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="bi bi-image"></i> Медиа файлы</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="{{ form.upload_image.id_for_label }}" class="form-label">
+                                            <i class="bi bi-image"></i> {{ form.upload_image.label }}
+                                        </label>
+                                        {{ form.upload_image }}
+                                        {% if form.upload_image.help_text %}
+                                            <small class="form-text text-muted">{{ form.upload_image.help_text }}</small>
+                                        {% endif %}
+                                        {% if form.upload_image.errors %}
+                                            <div class="text-danger small mt-1">{{ form.upload_image.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="mb-0">
+                                        <label for="{{ form.upload_video.id_for_label }}" class="form-label">
+                                            <i class="bi bi-camera-video"></i> {{ form.upload_video.label }}
+                                        </label>
+                                        {{ form.upload_video }}
+                                        {% if form.upload_video.help_text %}
+                                            <small class="form-text text-muted">{{ form.upload_video.help_text }}</small>
+                                        {% endif %}
+                                        {% if form.upload_video.errors %}
+                                            <div class="text-danger small mt-1">{{ form.upload_video.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="alert alert-info mt-3 mb-0">
+                                        <small>
+                                            <i class="bi bi-info-circle"></i> 
+                                            Медиа файлы будут встроены в объявление в формате base64. 
+                                            Изображения будут добавлены в конец текста как Markdown, видео - как HTML.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade {% if show_preview %}show active{% endif %}" id="preview" role="tabpanel">
+                            {% if preview_html %}
+                                <div class="markdown-content border rounded p-4 bg-light" style="min-height: 300px;">
+                                    {{ preview_html|safe }}
+                                </div>
+                            {% else %}
+                                <div class="markdown-content border rounded p-4 bg-light" style="min-height: 300px;">
+                                    {% if advert.body_html %}
+                                        {{ advert.body_html|safe }}
+                                    {% else %}
+                                        <p class="text-muted text-center">—</p>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" name="preview" value="1" class="btn btn-secondary">
+                            <i class="bi bi-eye"></i> Предпросмотр
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Сохранить
+                        </button>
+                        <a href="{% url 'adverts:detail' advert.pk %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Справка по Markdown</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong class="d-block mb-2">Заголовки:</strong>
+                    <code class="d-block mb-1"># Заголовок 1</code>
+                    <code class="d-block">## Заголовок 2</code>
+                </div>
+                
+                <div class="mb-3">
+                    <strong class="d-block mb-2">Списки:</strong>
+                    <code class="d-block">- Элемент списка</code>
+                </div>
+                
+                <div class="mb-3">
+                    <strong class="d-block mb-2">Ссылки:</strong>
+                    <code class="d-block">[Текст](URL)</code>
+                </div>
+                
+                <div class="mb-3">
+                    <strong class="d-block mb-2">Изображения:</strong>
+                    <code class="d-block">![Alt текст](URL)</code>
+                </div>
+                
+                <div class="mb-3">
+                    <strong class="d-block mb-2">Жирный текст:</strong>
+                    <code class="d-block">**текст**</code>
+                </div>
+                
+                <div>
+                    <strong class="d-block mb-2">Код:</strong>
+                    <code class="d-block">`код`</code>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

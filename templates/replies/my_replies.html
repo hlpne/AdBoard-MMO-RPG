@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои отклики - MMO Board{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-inbox"></i> Мои отклики</h1>
+        <p class="text-muted">Отклики на ваши объявления</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" action="{% url 'replies:my_replies' %}" class="row g-3">
+            <div class="col-md-4">
+                <label for="advert" class="form-label">Объявление</label>
+                <select name="advert" id="advert" class="form-select">
+                    <option value="">Все объявления</option>
+                    {% for advert in user_adverts %}
+                        <option value="{{ advert.pk }}" {% if current_advert == advert.pk %}selected{% endif %}>
+                            {{ advert.title }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="status" class="form-label">Статус</label>
+                <select name="status" id="status" class="form-select">
+                    <option value="">Все статусы</option>
+                    <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>Ожидает рассмотрения</option>
+                    <option value="accepted" {% if current_status == 'accepted' %}selected{% endif %}>Принят</option>
+                    <option value="deleted" {% if current_status == 'deleted' %}selected{% endif %}>Удалён</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="q" class="form-label">Поиск</label>
+                <input type="text" name="q" id="q" class="form-control" value="{{ search_query }}" placeholder="Поиск по тексту отклика...">
+            </div>
+            <div class="col-md-1">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Replies List -->
+{% if page_obj %}
+    {% for reply in page_obj %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h5 class="card-title mb-0">
+                            <a href="{% url 'adverts:detail' reply.advert.pk %}" class="text-decoration-none">
+                                {{ reply.advert.title }}
+                            </a>
+                        </h5>
+                        <small class="text-muted">
+                            <i class="bi bi-person"></i> {{ reply.author.email|default:"—" }} | 
+                            <i class="bi bi-clock"></i> {{ reply.created_at|date:"d.m.Y H:i"|default:"—" }}
+                        </small>
+                    </div>
+                    <span class="badge 
+                        {% if reply.status == 'pending' %}bg-warning{% elif reply.status == 'accepted' %}bg-success{% else %}bg-secondary{% endif %}">
+                        {{ reply.get_status_display|default:"—" }}
+                    </span>
+                </div>
+                
+                <p class="card-text">
+                    {% if reply.text %}
+                        {{ reply.text|linebreaks }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </p>
+                
+                {% if reply.status == 'pending' %}
+                    <div class="d-flex gap-2">
+                        <form method="post" action="{% url 'replies:accept' reply.pk %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="bi bi-check-circle"></i> Принять
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'replies:delete' reply.pk %}" onsubmit="return confirm('Вы уверены, что хотите удалить этот отклик?');" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Удалить
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if current_advert %}&advert={{ current_advert }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Первая</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_advert %}&advert={{ current_advert }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Предыдущая</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_advert %}&advert={{ current_advert }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Следующая</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if current_advert %}&advert={{ current_advert }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Последняя</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> Откликов не найдено.
+    </div>
+{% endif %}
+{% endblock %}
+

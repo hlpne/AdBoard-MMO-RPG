@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ advert.title }} - MMO Board{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="mb-0">{{ advert.title }}</h2>
+            <small class="text-muted">
+                <span class="badge bg-secondary">{{ advert.category.name }}</span>
+            </small>
+        </div>
+        {% if user == advert.author %}
+            <div>
+                <a href="{% url 'adverts:edit' advert.pk %}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-pencil"></i> Редактировать
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-3">
+            <i class="bi bi-person"></i> <strong>Автор:</strong> {{ advert.author.email|default:"—" }} | 
+            <i class="bi bi-clock"></i> <strong>Создано:</strong> {{ advert.created_at|date:"d.m.Y H:i"|default:"—" }}
+            {% if advert.updated_at != advert.created_at %}
+                | <i class="bi bi-arrow-clockwise"></i> <strong>Обновлено:</strong> {{ advert.updated_at|date:"d.m.Y H:i"|default:"—" }}
+            {% endif %}
+        </p>
+        
+        <div class="markdown-content">
+            {% if advert.body_html %}
+                {{ advert.body_html|safe }}
+            {% else %}
+                <p class="text-muted">—</p>
+            {% endif %}
+        </div>
+        
+        {% if user == advert.author %}
+            <hr>
+            <form method="post" action="{% url 'adverts:delete' advert.pk %}" onsubmit="return confirm('Вы уверены, что хотите удалить это объявление?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Удалить объявление
+                </button>
+            </form>
+        {% elif user.is_authenticated %}
+            <hr>
+            <h5>Оставить отклик</h5>
+            <form method="post" action="{% url 'replies:create' %}">
+                {% csrf_token %}
+                <input type="hidden" name="advert_id" value="{{ advert.pk }}">
+                <div class="mb-3">
+                    <textarea name="text" class="form-control" rows="5" placeholder="Введите текст отклика..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-send"></i> Отправить отклик
+                </button>
+            </form>
+        {% else %}
+            <hr>
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> Чтобы оставить отклик, <a href="{% url 'accounts:login' %}">войдите</a> или <a href="{% url 'accounts:signup' %}">зарегистрируйтесь</a>.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'adverts:list' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Назад к списку
+    </a>
+</div>
+{% endblock %}
+
