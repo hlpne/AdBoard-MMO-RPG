@@ -76,36 +76,6 @@ python manage.py runserver
 
 Откройте браузер: http://127.0.0.1:8000/
 
-### Production (Docker - опционально, только если нужен)
-
-Docker используется только для production-развёртывания. Для разработки он не нужен.
-
-Если всё же нужен Docker:
-
-1. Установите зависимости для production в `requirements.txt` (раскомментируйте gunicorn и psycopg2-binary)
-
-2. Создайте файл `.env` с настройками для production
-
-3. Соберите и запустите контейнеры:
-```bash
-cd ops
-docker-compose up -d
-```
-
-4. Выполните миграции:
-```bash
-docker-compose exec web python manage.py migrate
-```
-
-5. Создайте суперпользователя:
-```bash
-docker-compose exec web python manage.py createsuperuser
-```
-
-6. Соберите статические файлы:
-```bash
-docker-compose exec web python manage.py collectstatic --noinput
-```
 
 ## Структура проекта
 
@@ -119,8 +89,7 @@ mmo_board/
 ├── templates/       # HTML шаблоны
 ├── static/          # Статические файлы (CSS)
 ├── media/           # Загруженные файлы
-└── ops/             # Docker конфигурация
-```
+
 
 ## Основные функции
 
